@@ -16,6 +16,8 @@ public class Main {
 
     static final ArrayList<JLabel> enemyList = new ArrayList<>();
     static final ArrayList<JLabel> bulletList = new ArrayList<>();
+    static final ArrayList<JLabel> enemy2List = new ArrayList<>();
+    static final ArrayList<Integer> enemy2ListHp = new ArrayList<>();
 
     static class Box implements Runnable {
 
@@ -34,17 +36,41 @@ public class Main {
                             JLabel bulletL = bulletI.next();
                             Rectangle bulletR = bulletL.getBounds();
                             Iterator<JLabel> enemyI = enemyList.iterator();
-                            while (enemyI.hasNext()) {
+                            Iterator<JLabel> enemy2I = enemy2List.iterator();
+                            while (enemyI.hasNext() || enemy2I.hasNext()) {
                                 synchronized (enemyList) {
-                                    JLabel enemyL = enemyI.next();
-                                    Rectangle enemyR = enemyL.getBounds();
-                                    if (bulletR.intersects(enemyR)) {
-                                        container.remove(enemyL);
-                                        container.remove(bulletL);
-                                        enemyL.repaint();
-                                        bulletL.repaint();
-                                        enemyI.remove();
-                                        bulletI.remove();
+                                    synchronized (enemy2List) {
+                                        if (!enemy2List.isEmpty()) {
+                                            JLabel enemy2L = enemy2I.next();
+                                            int hp = enemy2ListHp.get(enemy2List.indexOf(enemy2L));
+                                            Rectangle enemy2R = enemy2L.getBounds();
+                                            if (bulletR.intersects(enemy2R)) {
+                                                if (enemy2ListHp.get(enemy2List.indexOf(enemy2L))<=0) {
+                                                    container.remove(enemy2L);
+                                                    container.remove(bulletL);
+                                                    enemy2L.repaint();
+                                                    bulletL.repaint();
+                                                    enemy2I.remove();
+                                                    bulletI.remove();
+                                                }
+                                                hp--;
+                                                enemy2ListHp.set(enemy2List.indexOf(enemy2L),hp);
+                                                container.remove(bulletL);
+                                                bulletI.remove();
+                                            }
+                                        }
+                                        if (!enemyList.isEmpty()){
+                                            JLabel enemyL = enemyI.next();
+                                            Rectangle enemyR = enemyL.getBounds();
+                                            if (bulletR.intersects(enemyR)) {
+                                                container.remove(enemyL);
+                                                container.remove(bulletL);
+                                                enemyL.repaint();
+                                                bulletL.repaint();
+                                                enemyI.remove();
+                                                bulletI.remove();
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -133,6 +159,49 @@ public class Main {
         }
     }
 
+    static class EnemyPlane2 implements Runnable {
+        Container container;
+        public EnemyPlane2(Container container2) {
+            container = container2;
+        }
+        public void run() {
+            Random random = new Random();
+            JLabel label = new JLabel(new ImageIcon("C:\\Users\\hp\\IdeaProjects\\Mine2D\\src\\Plane2.png"));
+            enemy2List.add(label);
+            enemy2ListHp.add(2);
+            int ex = random.nextInt(10,381);
+            int ey = 10;
+            label.setBounds(ex , ey, 50, 50);
+            container.add(label);
+
+            while (true) {
+
+                if (ey > 400) {
+                    break;
+                } else {
+                    try {
+                        Thread.sleep(10);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                ey = label.getY();
+                label.setBounds(ex, ey+=1, 50, 50);
+                label.repaint();
+
+            }
+
+            container.remove(label);
+            if (enemy2ListHp.indexOf(enemy2List.indexOf(label))>=0) {
+                int indexHp = enemy2List.indexOf(label);
+                enemy2List.remove(label);
+                enemy2ListHp.remove(indexHp);
+            }
+
+        }
+    }
+
 
     public static void main(String[] args) throws Exception {
         JFrame frame = new JFrame("MINE2D | HOMEPAGE");
@@ -180,6 +249,17 @@ public class Main {
         });
 
         timer.start();
+
+        Timer timer2 = new Timer(10000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                EnemyPlane2 enemyPlane2 = new EnemyPlane2(container);
+                Thread thread = new Thread(enemyPlane2);
+                thread.start();
+            }
+        });
+
+        timer2.start();
 
         frame.setVisible(true);
 
