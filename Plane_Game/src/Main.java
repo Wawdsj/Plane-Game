@@ -97,7 +97,7 @@ public class Main {
         }
 
         public void run() {
-            JLabel label = new JLabel(new ImageIcon("C:\\Users\\hp\\IdeaProjects\\Mine2D\\src\\Bullet.png"));
+            JLabel label = new JLabel(new ImageIcon("src/Bullet.png"));
             int bx = player.getX() + 15;
             final int[] by = {player.getY()};
             bulletList.add(label);
@@ -128,7 +128,7 @@ public class Main {
         }
         public void run() {
             Random random = new Random();
-            JLabel label = new JLabel(new ImageIcon("C:\\Users\\hp\\IdeaProjects\\Mine2D\\src\\Plane.png"));
+            JLabel label = new JLabel(new ImageIcon("src/Plane.png"));
             enemyList.add(label);
             int ex = random.nextInt(10,381);
             int ey = 10;
@@ -166,7 +166,7 @@ public class Main {
         }
         public void run() {
             Random random = new Random();
-            JLabel label = new JLabel(new ImageIcon("C:\\Users\\hp\\IdeaProjects\\Mine2D\\src\\Plane2.png"));
+            JLabel label = new JLabel(new ImageIcon("src/Plane2.png"));
             enemy2List.add(label);
             enemy2ListHp.add(2);
             int ex = random.nextInt(10,381);
@@ -213,7 +213,7 @@ public class Main {
         frame.getContentPane().setBackground(Color.cyan);
         frame.getContentPane().setVisible(true);
 
-        JLabel label = new JLabel(new ImageIcon("C:\\Users\\hp\\IdeaProjects\\Mine2D\\src\\PLAYER.png"));
+        JLabel label = new JLabel(new ImageIcon("src/PLAYER.png"));
         label.setBounds(150,200,50,50);
         container.add(label);
 
